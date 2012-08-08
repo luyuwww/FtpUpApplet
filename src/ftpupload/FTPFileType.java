@@ -7,7 +7,6 @@ public class FTPFileType {
 	
 	public static Map<String, String> ASCII;	
 	static{
-		
 		ASCII=new HashMap<String, String>();
         ASCII.put("ASC","ASC");
         ASCII.put("C","C");
