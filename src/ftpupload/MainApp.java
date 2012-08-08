@@ -532,7 +532,6 @@ public class MainApp extends JApplet {
 					frame.label7.setVisible(false);
 					uploads.remove(0);
 					jtable.updateUI();
-					// System.out.println("第"+(i+1)+"个上传完毕!");
 				}
 
 				if (0 == uploads.size()) {
@@ -579,7 +578,6 @@ public class MainApp extends JApplet {
 					if (e.getStateChange() == ItemEvent.SELECTED) {// 当用户的选择改变时
 						int fontsize = 0;
 						try {
-							System.out.println(e.getItem());
 							win.eval("getPzmInfo(\""+e.getItem()+"\")");
 						} catch (Exception ex) {// 若所输入的值不是整数，则不作任何的操作.
                             ex.printStackTrace();

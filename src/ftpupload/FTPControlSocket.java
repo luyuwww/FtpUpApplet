@@ -33,18 +33,14 @@ public class FTPControlSocket {
 		// setSoTimeOut(timeout);
 		validateConnection();
 	}
-	
-	
 
 	private void validateConnection() throws IOException {
-
 		FTPReply reply = readReply();
 		String rightCode[] = { "220", "230" };
 		validateReply(reply, rightCode);
 	}
 
 	private void initStream() {
-
 		try {
 			InputStream is = controlSocket.getInputStream();
 			br = new BufferedReader(new InputStreamReader(is, encoding));
@@ -61,12 +57,10 @@ public class FTPControlSocket {
 	}
 
 	public void close() throws IOException {
-
 		controlSocket.close();
 	}
 
 	public void logout() {
-
 		try {
 			writer.close();
 			br.close();
@@ -82,20 +76,17 @@ public class FTPControlSocket {
 	}
 
 	void writeCommand(String command) throws IOException {
-
 		writer.write(command + "\r\n");
 		writer.flush();
 	}
 
 	public FTPReply readReply() throws IOException {
-
 		String line;
 		for (line = br.readLine(); line != null && line.length() == 0; line = br
 				.readLine())
 			;
 		if (line == null)
 			throw new IOException("Unexpected null reply received");
-
 		if (line.length() < 3)
 			throw new IOException("Short reply received");
 		String replyCode = line.substring(0, 3);
@@ -159,7 +150,6 @@ public class FTPControlSocket {
 					&& !Character.isDigit(replyText.charAt(startIP)); startIP++)
 				;
 			startIP--;
-			// System.out.println("startIP:"+startIP);
 		}
 		if (endIP < 0) {
 			for (endIP = replyText.length() - 1; endIP > 0
@@ -167,11 +157,9 @@ public class FTPControlSocket {
 				;
 			if (++endIP >= replyText.length())
 				replyText = replyText + ")";
-			// System.out.println("endIP:"+endIP);
 		}
 
 		String ipData = replyText.substring(startIP + 1, endIP).trim();
-		// System.out.println(ipData);
 		int parts[] = new int[6];
 		int len = ipData.length();
 		int partCount = 0;

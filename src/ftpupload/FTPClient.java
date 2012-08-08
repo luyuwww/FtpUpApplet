@@ -11,14 +11,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-/**
- * 
- * @author BruceXX
- * 
- */
-
 public class FTPClient {
-
 	private int ControlPort;
 	private String controlEncoding;
 	private boolean cancelTransfer;
@@ -32,13 +25,11 @@ public class FTPClient {
 	protected FTPProcessListener listener;
 	private FTPDataSocket data;
 	private boolean isASCII;
-
 	private long startSize;
 	private volatile boolean handling;
 	private volatile boolean over;
 
 	public FTPClient() {
-
 		this.ControlPort = 21;
 		this.controlEncoding = "uTF-8";
 		this.cancelTransfer = false;
@@ -51,14 +42,11 @@ public class FTPClient {
 
 	/**
 	 * 建立连接
-	 * 
 	 * @throws FTPException
 	 * @throws SocketException
 	 * @throws IOException
 	 */
-
 	public void connect() throws FTPException, SocketException, IOException {
-
 		checkConnection(false);
 		initalize(new FTPControlSocket(remoteAddress, ControlPort, timeout,
 				controlEncoding));
@@ -66,79 +54,46 @@ public class FTPClient {
 
 	/**
 	 * 登陆
-	 * 
-	 * @param user
-	 * @param password
-	 * @throws FTPException
-	 * @throws IOException
 	 */
 	public void login(String user, String password) throws FTPException,
 			IOException {
-
 		user(user);
 		pass(password);
-
 	}
 
 	public void user(String user) throws FTPException, IOException {
-
 		sendCommand("USER", user, "230,331");
 	}
 
 	public void pass(String pass) throws FTPException, IOException {
-
 		sendCommand("PASS", pass, "230,202,332");
 	}
 
 	/**
 	 * 进入某个目录
-	 * 
-	 * @param dir
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void cd(String dir) throws FTPException, IOException {
-
 		sendCommand("CWD", dir, "250");
-
 	}
 
 	/**
 	 * 创建文件夹
-	 * 
-	 * @param dir
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void mkdir(String dir) throws FTPException, IOException {
-
 		sendCommand("MKD", dir, "200,250,257");
 	}
 
 	/**
 	 * 退出连接
-	 * 
-	 * @throws FTPException
-	 * @throws IOException
 	 */
 	public void quit() throws FTPException, IOException {
 		sendCommand("QUIT", null, "221,226");
-
 	}
 
 	/**
 	 * 获取远程文件的大小
-	 * 
-	 * @param remoteFile
-	 * @return
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public long getSize(String remoteFile) throws FTPException, IOException {
-
 		checkConnection(true);
 		FTPReply replay = control.sendCommand("SIZE " + remoteFile);
 		String replyText = replay.getReplyText();
@@ -153,31 +108,18 @@ public class FTPClient {
 	}
 
 	/**
-	 * 设置文件传输的类型,FTP有两种，一种是BINARY,第二种是ASCII,我试验了一下，貌似binary可以传任何类型的，不像网上说的那些文本之类的需要用ASCII来传输
-	 * 
-	 * @param type
-	 * @throws FTPException
-	 * @throws IOException
+	 * 设置文件传输的类型,FTP有两种，一种是BINARY,第二种是ASCII,我试验了一下，貌似binary可以传任何类型的，
+	 * 不像网上说的那些文本之类的需要用ASCII来传输
 	 */
-
 	private void sendTransferType(String type) throws FTPException, IOException {
-
 		sendCommand("TYPE", type, "200");
 	}
-
 	/**
 	 * 根据文件名自动选择传输类型
-	 * 
-	 * @param filename
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void autoChooseType(String filename) throws FTPException,
 			IOException {
-
 		if (detectTransferMode) {
-
 			if (FTPFileType.matchASCII(filename)) {
 				isASCII = true;
 				sendTransferType("A");
@@ -185,19 +127,12 @@ public class FTPClient {
 				isASCII = false;
 				sendTransferType("I");
 			}
-
 		}
 	}
-
 	/**
 	 * 来检验是否传输完毕
-	 * 
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void validateTransfer() throws FTPException, IOException {
-
 		handling = true;
 		checkConnection(true);
 		String[] rightCode = { "225", "226", "250", "426", "450" };
@@ -207,50 +142,29 @@ public class FTPClient {
 			handling = false;
 			throw new FTPException(reply);
 		} else {
-
 			lastReply = control.validateReply(reply, rightCode);
 			handling = false;
 			return;
 		}
-
 	}
-
 	/**
 	 * 从某个断点开始续传
-	 * 
-	 * @param startSize
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void restart(long startSize) throws FTPException, IOException {
-
 		sendCommand("REST", startSize + "", "350");
 	}
 
 	/**
 	 * 向服务器传输文件
-	 * 
-	 * @param remoteFile
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void storefile(String remoteFile) throws FTPException, IOException {
-
 		sendCommand("STOR", remoteFile, "125,150,350");
 	}
 
 	/**
 	 * 从服务器已有文件开始附加文件，续传可以用这个，也可以用STOR,不过STOR要先指定start后才可以
-	 * 
-	 * @param remoteFile
-	 * @throws FTPException
-	 * @throws IOException
 	 */
-
 	public void appendfile(String remoteFile) throws FTPException, IOException {
-
 		sendCommand("APPE", remoteFile, "125,150,350");
 	}
 
@@ -258,7 +172,6 @@ public class FTPClient {
 	 * 关闭文件传输流
 	 */
 	private void closeSocket() {
-
 		try {
 			if (data != null) {
 				data.close();
@@ -271,12 +184,8 @@ public class FTPClient {
 
 	/**
 	 * 关闭文件传输流，以及相关的输出流
-	 * 
-	 * @param out
 	 */
-
 	private void closeSocket(OutputStream out) {
-
 		try {
 			if (out != null)
 				out.close();
@@ -285,16 +194,10 @@ public class FTPClient {
 		}
 		closeSocket();
 	}
-
 	/**
 	 * 初始化传输条件,即传输之前的指令
-	 * 
-	 * @param remoteFile
-	 * @throws FTPException
 	 */
-
 	private void initTransfer(String remoteFile) throws FTPException {
-
 		checkConnection(true);
 		cancelTransfer = false;
 		data = null;
@@ -336,6 +239,7 @@ public class FTPClient {
 
 	/**
 	 * 传输文件写入过程
+	 * 
 	 * @param localFile
 	 * @param remoteFile
 	 */
@@ -348,8 +252,8 @@ public class FTPClient {
 		try {
 			bis = new BufferedInputStream(new FileInputStream(localFile));
 			initTransfer(remoteFile);
-			bos = new BufferedOutputStream(new DataOutputStream(data
-					.getOutputStream()), transferBufferSize * 2);
+			bos = new BufferedOutputStream(new DataOutputStream(
+					data.getOutputStream()), transferBufferSize * 2);
 			// if(!isASCII)
 
 			bis.skip(startSize);
@@ -612,10 +516,7 @@ public class FTPClient {
 			temp = new Thread(new Runnable() {
 
 				public void run() {
-					// TODO Auto-generated method stub
 					while (true) {
-						// System.out.println(monitor.uploadSize);
-						System.out.println("现文件大小:" + (m.uploadSize + size));
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
